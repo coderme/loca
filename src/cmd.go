@@ -38,6 +38,7 @@ var (
 	dirArchieves = flag.String("dir-archieves", defaultDirArchieve, "Directory where to store archieve files")
 	hostsSkipped = flag.String("hosts-skipped", defaultSkippedHosts, "Hosts to Always skipped while fetching.")
 	userAgent    = flag.String("user-agent", defaultUserAgent, "UserAgent of the client")
+	keepMeta     = flag.Bool("keep-meta", false, "Keep origin <meta> tags")
 
 	showVersion = flag.Bool("v", false, "")
 )
