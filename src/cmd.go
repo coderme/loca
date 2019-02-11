@@ -12,11 +12,12 @@ const (
 	defaultConcurrency        = 1
 	retryDefaultCount         = 3
 	// default
-	defaultDir         = `./`
-	defaultDirAssets   = `assets`
-	defaultDirMedia    = `media`
-	defaultDirArchieve = `archieves`
-	defaultLang        = "en"
+	defaultDir          = `./`
+	defaultDirAssets    = `assets`
+	defaultDirMedia     = `media`
+	defaultDirArchieve  = `archieves`
+	defaultLang         = "en"
+	defaultSkippedHosts = "youtube,vimeo"
 )
 
 var (
@@ -29,7 +30,7 @@ var (
 	downloadURLsWithQueryString = flag.Bool("dl-query", false, "Download URLs those with query string like https://example.com/?action=msglist&order=desc")
 	ascend                      = flag.Bool("ascend", false, "Ascend to host root when fetching")
 	retry                       = flag.Bool("retry", false, "Retry fetching directly if fetch failed")
-	retryCount                  = flag.Bool("retry-max-count", retryDefaultCount, "Retry fetching this times before giving up")
+	retryCount                  = flag.Int("retry-max-count", retryDefaultCount, "Retry fetching this times before giving up")
 	verbose                     = flag.Bool("verbose", false, "Be more verbose")
 
 	dir          = flag.String("dir", defaultDir, "Dirctory root where to store all downloaded files.")
@@ -42,3 +43,11 @@ var (
 
 	showVersion = flag.Bool("v", false, "")
 )
+
+func checkOption() {
+	flag.Parse()
+
+	if *concurrency <= 0 {
+		*concurrency = defaultConcurrency
+	}
+}
