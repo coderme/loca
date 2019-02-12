@@ -29,3 +29,12 @@ func packHTML(s string) string {
 
 	return s
 }
+
+func cleanAttrs(s string) string {
+	for _, r := range reCleanAttrs {
+		s = r.ReplaceAllString(s, "$1")
+	}
+
+	return s
+
+}
