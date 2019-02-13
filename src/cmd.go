@@ -60,4 +60,17 @@ func checkOptions() {
 	if *concurrency <= 0 {
 		*concurrency = defaultConcurrency
 	}
+
+	if *retryCount < 0 {
+		*retryCount = 0
+	}
+}
+
+func printVersion() {
+	fmt.Fprintf(os.Stderr, `%v %v (c)(%v)`,
+		os.Args[0],
+		version,
+		time.Now().Year(),
+	)
+	os.Exit(1)
 }
