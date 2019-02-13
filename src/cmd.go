@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"os"
 	"time"
 )
 
@@ -44,7 +46,15 @@ var (
 	showVersion = flag.Bool("v", false, "")
 )
 
-func checkOption() {
+func init() {
+	if os.Geteuid() == 0 || os.Getegid() == 0 {
+		fmt.Println("Don't Run as ROOT")
+		os.Exit(2)
+	}
+
+}
+
+func checkOptions() {
 	flag.Parse()
 
 	if *concurrency <= 0 {
