@@ -42,6 +42,7 @@ var (
 	hostsSkipped = flag.String("hosts-skipped", defaultSkippedHosts, "Hosts to Always skipped while fetching.")
 	userAgent    = flag.String("user-agent", defaultUserAgent, "UserAgent of the client")
 	keepMeta     = flag.Bool("keep-meta", false, "Keep origin <meta> tags")
+	startURL     = flag.String("url", "", "URL to be fetched")
 
 	showVersion = flag.Bool("v", false, "")
 )
@@ -64,6 +65,7 @@ func checkOptions() {
 	if *retryCount < 0 {
 		*retryCount = 0
 	}
+
 }
 
 func printVersion() {
