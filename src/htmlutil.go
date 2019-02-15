@@ -37,3 +37,12 @@ func cleanAttrs(s string) string {
 
 	return s
 }
+
+func prettyURL(ugly string) (pretty string) {
+	ugly = reUglyURL.ReplaceAllLiteralString(ugly, "-")
+	pretty = reOneHyphen.ReplaceAllLiteralString(ugly, "-")
+
+	// what about basename?
+	return
+
+}
