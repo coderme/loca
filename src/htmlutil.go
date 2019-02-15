@@ -36,5 +36,4 @@ func cleanAttrs(s string) string {
 	}
 
 	return s
-
 }
