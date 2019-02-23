@@ -42,7 +42,6 @@ var (
 	hostsSkipped = flag.String("hosts-skipped", defaultSkippedHosts, "Hosts to Always skipped while fetching.")
 	userAgent    = flag.String("user-agent", defaultUserAgent, "UserAgent of the client")
 	keepMeta     = flag.Bool("keep-meta", false, "Keep origin <meta> tags")
-	startURL     = flag.String("url", "", "URL to be fetched")
 
 	showVersion = flag.Bool("v", false, "")
 )
@@ -55,7 +54,7 @@ func init() {
 
 }
 
-func checkOptions() {
+func checkOptions() error {
 	flag.Parse()
 
 	if *concurrency <= 0 {
@@ -66,6 +65,13 @@ func checkOptions() {
 		*retryCount = 0
 	}
 
+	args := flag.Args()
+	if len(args) == 0 {
+		return fmt.Errorf("Missing URL(s) to work on")
+	}
+
+	return nil
+
 }
 
 func printVersion() {
@@ -75,4 +81,17 @@ func printVersion() {
 		time.Now().Year(),
 	)
 	os.Exit(1)
+}
+
+func printUsage() {
+	fmt.Fprintf(os.Stderr,
+		`
+Usage: %s
+
+`,
+		os.Args[0],
+	)
+
+	os.Exit(1)
+
 }

@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	html5 "golang.org/x/net/html"
-	"html"
+	//	"html"
 	"strings"
 )
 
