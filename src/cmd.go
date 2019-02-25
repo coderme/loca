@@ -43,7 +43,7 @@ var (
 	userAgent    = flag.String("user-agent", defaultUserAgent, "UserAgent of the client")
 	keepMeta     = flag.Bool("keep-meta", false, "Keep origin <meta> tags")
 
-	showVersion = flag.Bool("v", false, "")
+	showVersion = flag.Bool("v", false, "Print version")
 )
 
 func init() {
@@ -54,6 +54,7 @@ func init() {
 
 }
 
+// checkOptions checks the command args for validity
 func checkOptions() error {
 	flag.Parse()
 
@@ -74,6 +75,8 @@ func checkOptions() error {
 
 }
 
+// printVersion prints loca version
+// then exit
 func printVersion() {
 	fmt.Fprintf(os.Stderr, `%v %v (c)(%v)`,
 		os.Args[0],
@@ -81,17 +84,4 @@ func printVersion() {
 		time.Now().Year(),
 	)
 	os.Exit(1)
-}
-
-func printUsage() {
-	fmt.Fprintf(os.Stderr,
-		`
-Usage: %s
-
-`,
-		os.Args[0],
-	)
-
-	os.Exit(1)
-
 }
