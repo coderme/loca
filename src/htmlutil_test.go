@@ -43,3 +43,31 @@ func TestPackHTML(t *testing.T) {
 	}
 
 }
+
+func TestCleanAttrs(t *testing.T) {
+	const snippet = `
+<link href="https://www.example.com/pretty.css?refresh=true" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" integrity="sha256-TN63maDMYkAimHYRvtXvanX7sCK5Sf7ZCoZA/YAlKFQ=" crossorigin="anonymous" href="/assets/main.css">
+  
+  <script src="https://cdn.example.com/lib.min.js"></script>
+  <script src="/assets/main.js" integrity="sha256-nas+ETXQ27ZXx/j+QlYE5VFONJwqbqoBVLVAHGuKIiE=" crossorigin="anonymous" type="text/javascript"></script>
+
+`
+
+	checks := map[string]string{
+		`crossorigin=`: "crossorigin attribute",
+		`anonymous=`:   "anonymous attribute",
+	}
+
+	cleaned := strings.ToLower(
+		cleanAttrs(snippet),
+	)
+
+	for s, m := range checks {
+		if strings.Contains(cleaned, s) {
+			t.Error(`cleanAttrs() contains ` + m)
+		}
+
+	}
+
+}
