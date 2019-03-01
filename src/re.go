@@ -7,7 +7,7 @@ import (
 var (
 	reHREF      = regexp.MustCompile(`(?i) href=["']([^<>"']+)['"]`)
 	reSRC       = regexp.MustCompile(`(?i) src=["']([^<>"']+)['"]`)
-	reUglyURL   = regexp.MustCompile(`(?s)[;\+\s"'` + "`" + `%\?!~><\}\{\]\[\\\\:,|\*&^$@]+`)
+	reUglyURL   = regexp.MustCompile(`(?s)[;\+\s"'` + "`" + `%\?!~><\}\{\]\[\\\\:,|\*&^$@\+\(\)]+`)
 	reOneHyphen = regexp.MustCompile(`-{2,}`)
 	// integrety and crossorigin maybe problematic on localhost
 	reCleanAttrs = []*regexp.Regexp{

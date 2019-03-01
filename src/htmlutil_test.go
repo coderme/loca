@@ -37,7 +37,7 @@ func TestPackHTML(t *testing.T) {
 	for s, m := range checks {
 
 		if strings.Contains(packed, s) {
-			t.Error("packHTML() result contains " + m)
+			t.Error("packHTML() result contains", m)
 		}
 
 	}
@@ -65,9 +65,25 @@ func TestCleanAttrs(t *testing.T) {
 
 	for s, m := range checks {
 		if strings.Contains(cleaned, s) {
-			t.Error(`cleanAttrs() contains ` + m)
+			t.Error(`cleanAttrs() contains`, m)
 		}
 
+	}
+
+}
+
+func TestPrettyURL(t *testing.T) {
+	const (
+		uglyChars = `"'<> ;[]{}%~,&|*$@+()!` + "`"
+		ugly      = "https://www.example.com/list.html?page=13&order=desc&note=" + uglyChars
+	)
+
+	pretty := prettyURL(ugly)
+
+	if strings.ContainsAny(pretty, uglyChars) {
+		t.Error(pretty, "contains at least on chars of",
+			uglyChars,
+		)
 	}
 
 }
