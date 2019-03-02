@@ -19,7 +19,8 @@ const (
 	defaultDirMedia     = `media`
 	defaultDirArchieve  = `archieves`
 	defaultLang         = "en"
-	defaultSkippedHosts = "youtube,vimeo"
+	defaultSkippedHosts = "youtube.com,vimeo.com"
+	defaultSkippedURLs  = ""
 )
 
 var (
@@ -39,7 +40,8 @@ var (
 	dirAssets    = flag.String("dir-assets", defaultDirAssets, "Dirctory where to store assets files.")
 	dirMedia     = flag.String("dir-media", defaultDirMedia, "Dirctory where to store videos and audios files.")
 	dirArchieves = flag.String("dir-archieves", defaultDirArchieve, "Directory where to store archieve files")
-	hostsSkipped = flag.String("hosts-skipped", defaultSkippedHosts, "Hosts to Always skipped while fetching.")
+	skippedHosts = flag.String("skipped-hosts", defaultSkippedHosts, "CSV, skip fetching any host that contains any of these values.")
+	skippedURLs  = flag.String("skipped-urls", defaultSkippedURLs, "CSV, skip fetching any url that contains any of these values.")
 	userAgent    = flag.String("user-agent", defaultUserAgent, "UserAgent of the client")
 	keepMeta     = flag.Bool("keep-meta", false, "Keep origin <meta> tags")
 
