@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 )
 
@@ -41,5 +44,27 @@ func fetch(u string, delay time.Duration) (*http.Response, error) {
 func readFullResponse(resp *http.Response) ([]byte, error) {
 	defer resp.Body.Close()
 	return ioutil.ReadAll(resp.Body)
+
+}
+
+// parseURL parses URL returns valid URL for fetching,
+// and any error encountered while parsing
+func parseURL(u string) (string, error) {
+	parsed, err := url.Parse(u)
+	if err != nil {
+		return u, err
+	}
+
+	if parsed.Scheme == "" {
+		parsed.Scheme = "http"
+	}
+
+	validated := parsed.String()
+
+	if !strings.HasPrefix(validated, "http") {
+		return validated, fmt.Errorf("invalid URL supported")
+	}
+
+	return validated, err
 
 }
