@@ -68,3 +68,18 @@ func parseURL(u string) (string, error) {
 	return validated, err
 
 }
+
+// discoverSrcURLs discovers SRC urls for fetching
+func discoverSrcURLs(s string) (discovered []string) {
+	matches := reSRC.FindAllStringSubmatch(s, -1)
+	for _, m := range matches {
+
+		url := strings.TrimSpace(m[1])
+
+		if url != "" {
+			discovered = append(discovered, m[1])
+		}
+	}
+
+	return
+}
