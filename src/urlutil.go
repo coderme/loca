@@ -83,3 +83,18 @@ func discoverSrcURLs(s string) (discovered []string) {
 
 	return
 }
+
+// discoverHREFURLs discovers HREF urls for fetching
+func discoverHREFURLs(s string) (discovered []string) {
+	matches := reHREF.FindAllStringSubmatch(s, -1)
+	for _, m := range matches {
+
+		url := strings.TrimSpace(m[1])
+
+		if url != "" {
+			discovered = append(discovered, m[1])
+		}
+	}
+
+	return
+}
