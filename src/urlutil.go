@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -97,4 +98,51 @@ func discoverHREFURLs(s string) (discovered []string) {
 	}
 
 	return
+}
+
+// resolveURL resolve URL based on its parent URL
+func resolveURL(parent, child string, unescape bool) (string, error) {
+	if unescape {
+		parent = html.UnescapeString(parent)
+		child = html.UnescapeString(child)
+	}
+
+	parsedChild, err := url.Parse(child)
+
+	if err != nil {
+		return child, fmt.Errorf("Child -> %v", err)
+	}
+
+	if strings.HasPrefix(parsedChild.Host, "http") {
+		return parsedChild.String(), nil
+	}
+
+	parsedParent, err := url.Parse(parent)
+	if err != nil {
+		return parsedChild.String(), fmt.Errorf("Parent -> %v",
+			err,
+		)
+	}
+
+	if parsedChild.Host == "" {
+		parsedChild.Host = parsedParent.Host
+	}
+
+	if parsedChild.Scheme == "" {
+		parsedChild.Scheme = parsedParent.Scheme
+	}
+
+	if parsedChild.Host != parsedParent.Host {
+		return parsedChild.String(), nil
+	}
+
+	parsedChild.Path = resolvePath(parsedParent.Path, parsedChild.Path)
+
+	return parsedChild.String(), nil
+
+}
+
+// resolvePath resolves paths to its main page path
+func resolvePath(page, resource string) string {
+	return resource
 }
