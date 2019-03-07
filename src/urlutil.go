@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"path"
 	"strings"
 	"time"
 )
@@ -142,7 +143,14 @@ func resolveURL(parent, child string, unescape bool) (string, error) {
 
 }
 
-// resolvePath resolves paths to its main page path
+// resolvePath resolves paths to their relative main page path
 func resolvePath(page, resource string) string {
-	return resource
+
+	if strings.HasPrefix(resource, "/") {
+		return resource
+	}
+
+	resource = path.Join(page, resource)
+	return path.Clean(resource)
+
 }
