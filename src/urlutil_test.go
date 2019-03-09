@@ -133,6 +133,24 @@ func TestResolvePath(t *testing.T) {
 			Child:    "../../images/logo.png",
 			Expected: "/images/logo.png",
 		},
+
+		URLFormat{
+			Parent:   "/cat/subcats/list.html",
+			Child:    "../images/logo.png",
+			Expected: "/cat/images/logo.png",
+		},
+
+		URLFormat{
+			Parent:   "/cat/subcats/list.html",
+			Child:    "./images/logo.png",
+			Expected: "/cat/subcats/images/logo.png",
+		},
+
+		URLFormat{
+			Parent:   "/cat/subcats/list.html",
+			Child:    "images/logo.png",
+			Expected: "/cat/subcats/images/logo.png",
+		},
 	}
 
 	for _, p := range paths {

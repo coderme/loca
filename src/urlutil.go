@@ -146,6 +146,8 @@ func resolveURL(parent, child string, unescape bool) (string, error) {
 // resolvePath resolves paths to their relative main page path
 func resolvePath(page, resource string) string {
 
+	page = path.Dir(page)
+
 	if strings.HasPrefix(resource, "/") {
 		return resource
 	}
