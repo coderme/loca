@@ -8,4 +8,9 @@ func main() {
 		printVersion()
 	}
 
+	_, err := getStartPages()
+	if err != nil {
+		exit(1, err)
+	}
+
 }

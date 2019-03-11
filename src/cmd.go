@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"time"
 )
@@ -81,6 +82,26 @@ func checkOptions() error {
 	}
 
 	return nil
+
+}
+
+//getStartPages gets start page
+func getStartPages() ([]string, error) {
+
+	var pages []string
+	for _, u := range flag.Args() {
+		parsed, err := parseURL(u)
+		if err != nil && *verbose {
+			log.Println("Error: parseing", u, "->", err)
+			continue
+		}
+		pages = append(pages, parsed)
+	}
+
+	if len(pages) == 0 {
+		return nil, fmt.Errorf("Error: no valid URL provided")
+	}
+	return pages, nil
 
 }
 
