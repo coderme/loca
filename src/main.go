@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/codermeorg/filo"
+)
+
 func main() {
 	// parse flag
 	checkOptions()
@@ -8,9 +12,39 @@ func main() {
 		printVersion()
 	}
 
-	_, err := getStartPages()
+	pages, err := getStartPages()
 	if err != nil {
 		exit(1, err)
+	}
+
+	// init queue
+	queue := filo.NewStringStack()
+
+	for _, page := range pages {
+		queue.Push(page)
+	}
+
+	concurrent := make(chan struct{}, *concurrency)
+
+	for {
+
+		if queue.Len() == 0 {
+			break
+		}
+
+		url := queue.Pop()
+
+		if url == "" {
+			continue
+		}
+
+		concurrent <- struct{}{}
+
+		go func() {
+			defer func() { <-concurrent }()
+			// process URL here
+
+		}()
 	}
 
 }

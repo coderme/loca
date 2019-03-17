@@ -54,6 +54,7 @@ var (
 	keepMeta  = flag.Bool("keep-meta", false, "Keep origin <meta> tags")
 
 	showVersion = flag.Bool("v", false, "Print version")
+	// global vars
 )
 
 func init() {
