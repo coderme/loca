@@ -12,7 +12,7 @@ func exit(code int, s ...interface{}) {
 	os.Exit(code)
 }
 
-// exitf writes  formated error msgs to stderr and exit
+// exitf writes formated error msgs to stderr and exit
 func exitf(code int, format string, s ...interface{}) {
 	fmt.Fprintf(os.Stderr, format, s...)
 	os.Exit(code)

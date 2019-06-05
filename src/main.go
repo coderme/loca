@@ -6,7 +6,7 @@ import (
 
 func main() {
 	// parse flag
-	checkOptions()
+	parseOptions()
 
 	if *showVersion {
 		printVersion()
@@ -41,8 +41,10 @@ func main() {
 		concurrent <- struct{}{}
 
 		go func() {
-			defer func() { <-concurrent }()
+			defer <-concurrent
 			// process URL here
+
+			
 
 		}()
 	}

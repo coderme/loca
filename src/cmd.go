@@ -20,7 +20,7 @@ const (
 	defaultDirMedia     = `media`
 	defaultDirArchieve  = `archieves`
 	defaultLang         = "en"
-	defaultSkippedHosts = "youtube.com,vimeo.com"
+	defaultSkippedHosts = "youtube.com,vimeo.com,github.com,bitbucket.com"
 	defaultSkippedURLs  = ""
 	defaultOnlyHosts    = ""
 	defaultOnlyURLs     = ""
@@ -59,14 +59,13 @@ var (
 
 func init() {
 	if os.Geteuid() == 0 || os.Getegid() == 0 {
-		fmt.Println("Don't Run as ROOT")
-		os.Exit(2)
+		exit(2, "Don't Run as ROOT")
 	}
 
 }
 
-// checkOptions checks the command args for validity
-func checkOptions() error {
+// parseOptions checks the command args for validity
+func parseOptions() error {
 	flag.Parse()
 
 	if *concurrency <= 0 {
@@ -114,5 +113,5 @@ func printVersion() {
 		version,
 		time.Now().Year(),
 	)
-	os.Exit(1)
+	exit(1)
 }
