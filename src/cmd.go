@@ -3,8 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -24,6 +26,8 @@ const (
 	defaultSkippedURLs  = ""
 	defaultOnlyHosts    = ""
 	defaultOnlyURLs     = ""
+	tempFilePrefix      = "loca-"
+	defaultOfflineList  = "https://raw.githubusercontent.com/codermeorg/loca-offline/master/src/hosts"
 )
 
 var (
@@ -50,11 +54,16 @@ var (
 	onlyHosts = flag.String("only-hosts", defaultOnlyHosts, "CSV, Fetch only hosts that contain any of these values.")
 	onlyURLs  = flag.String("only-urls", defaultOnlyURLs, "CSV, Fetch only URLs that contain any of these values.")
 
-	userAgent = flag.String("user-agent", defaultUserAgent, "UserAgent of the client")
-	keepMeta  = flag.Bool("keep-meta", false, "Keep origin <meta> tags")
+	userAgent       = flag.String("user-agent", defaultUserAgent, "UserAgent of the client")
+	keepMeta        = flag.Bool("keep-meta", false, "Keep origin <meta> tags")
+	offlineDisabled = flag.Bool("offline-disabled", false, "Disable reqriting hosts for offline browsing")
+
+	offlineHosts = flag.String("offline-list", defaultOfflineList, "List of websites to be rewritin for offline browsing")
 
 	showVersion = flag.Bool("v", false, "Print version")
+
 	// global vars
+	hosts = make(map[string]bool)
 )
 
 func init() {
@@ -114,4 +123,33 @@ func printVersion() {
 		time.Now().Year(),
 	)
 	exit(1)
+}
+
+// cacheHosts graps hosts from remote URL or local file
+func cacheHosts(u string) (map[string]bool, error) {
+
+	// local file
+	if strings.HasPrefix(u, "/") {
+		data, err := ioutil.ReadFile(u)
+		if err != nil {
+			return nil, err
+		}
+
+		return parseHosts(data), nil
+	}
+
+	resp, err := fetch(u, time.Nanosecond)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+
+	}
+
+	return parseHosts(data), nil
+
 }

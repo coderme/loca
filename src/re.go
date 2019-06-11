@@ -17,5 +17,18 @@ var (
 		regexp.MustCompile(`(?is)(<[^<>]+)(\sintegrity=["'][^"'<>]*["'])`),
 		regexp.MustCompile(`(?is)(<[^<>]+)(\stype=["']\s*text/javascript\s*["'])`),
 	}
+
+	reCleanTags = []*regexp.Regexp{
+
+		regexp.MustCompile(`(?is)<meta[^<>]+rel="pingback"[^<>]*>`),
+	}
+
+	reFilter = []*regexp.Regexp{
+		regexp.MustCompile(`(?is)(src=")([^<>"]+)(")`),
+		regexp.MustCompile(`(?is)(src=')([^<>']+)(')`),
+		regexp.MustCompile(`(?is)(href=")([^<>"]+)(")`),
+		regexp.MustCompile(`(?is)(href=')([^<>"]+)(')`),
+	}
+
 	reWhitespace = regexp.MustCompile(`(?s)\s+`)
 )

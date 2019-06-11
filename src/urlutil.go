@@ -3,9 +3,12 @@ package main
 import (
 	"fmt"
 	"html"
+	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"strings"
 	"time"
@@ -41,11 +44,75 @@ func fetch(u string, delay time.Duration) (*http.Response, error) {
 	return client.Do(req)
 }
 
-// readFullResponse reads the full HTTP response as bytes, closes
-// HTTP response bdy after finish
-func readFullResponse(resp *http.Response) ([]byte, error) {
+func guessMime(u string) string {
+
+	return ""
+}
+
+// prettyName makes a file form URL
+func prettyName(u string) string {
+	// get rid of the scheme://
+	url := strings.SplitN(u, "://", 2)[1]
+
+	// assume url uses / as seprator, then
+	// we need to clean it
+	parts := strings.Split(url, "/")
+
+	for i, v := range parts {
+		parts[i] = prettyURL(v)
+	}
+
+	var cleaned []string
+
+	// get dir based on guessed mimetime
+
+	// add *cleaned parts to the clean
+	cleaned = append(cleaned, parts...)
+
+	// return ""
+
+}
+
+// pathParts gets directory and basename from fileName
+func dirName(fileName string) (dir string) {
+
+	parts := strings.Split(fileName, "/")
+
+	return strings.Join(parts[:len(parts)-1], "/")
+
+}
+
+// saveFile save the resp body HTTP response to name file
+func saveFile(resp *http.Response, name string) error {
 	defer resp.Body.Close()
-	return ioutil.ReadAll(resp.Body)
+
+	f, err := ioutil.TempFile("", tempFilePrefix)
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(f, resp.Body)
+	if err != nil {
+		defer func() {
+			// clean the mess
+			err := os.Remove(f.Name())
+			if err != nil {
+				log.Println(err)
+			}
+		}()
+
+		return err
+	}
+
+	dir := dirName(name)
+
+	err = os.MkdirAll(dir, 0777)
+	if err != nil {
+		return err
+	}
+
+	err = os.Rename(f.Name(), name)
+
+	return err
 
 }
 
@@ -64,7 +131,7 @@ func parseURL(u string) (string, error) {
 	validated := parsed.String()
 
 	if !strings.HasPrefix(validated, "http") {
-		return validated, fmt.Errorf("invalid URL supported")
+		return validated, fmt.Errorf("invalid URL")
 	}
 
 	return validated, err
@@ -154,5 +221,103 @@ func resolvePath(page, resource string) string {
 
 	resource = path.Join(page, resource)
 	return path.Clean(resource)
+
+}
+
+// rewriteHosts rewrites all href and frc URL to 0.0.0.0
+// to prevent never-ending loading status of webpages
+// while browsing offline
+func rewriteOfflineURLs(data string) string {
+	for _, re := range reFilter {
+
+		data = re.ReplaceAllStringFunc(data,
+			func(match0 string) string {
+				m := re.FindStringSubmatch(match0)
+				parsed, err := url.Parse(m[2])
+				if err != nil {
+					return m[1] + "#0" + m[3]
+				}
+
+				if !isOfflineHost(m[2]) {
+					return match0
+				}
+
+				return m[1] +
+					parsed.Scheme + "://" +
+					"0.0.0.0" + parsed.Host +
+					parsed.RequestURI() +
+					m[3]
+
+			})
+	}
+
+	return data
+
+}
+
+// isOfflineHost lookup host against
+func isOfflineHost(host string) bool {
+	_, ok := hosts[host]
+	return ok
+}
+
+// fetchToFile fetch URL and save it to local file
+// system
+func fetchToFile(u string) error {
+
+	parsed, err := parseURL(u)
+
+	if err != nil {
+		return err
+	}
+
+	// check URL structure
+	// if it allowed to be fetched
+
+	resp, err := fetch(parsed, *delay)
+	if err != nil {
+		return err
+	}
+
+	// check URL fetched content
+	// if it allowed to be stored
+
+	// cool, it seems we plan to save it
+	// lets name it
+	name := prettyName(u)
+
+	err = saveFile(resp, name)
+	if err != nil {
+		return err
+	}
+
+	pretty := prettyURL(u)
+
+	return nil
+}
+
+// parseHosts parses data for hosts
+func parseHosts(d []byte) map[string]bool {
+	hosts := make(map[string]bool)
+	lines := strings.Split(string(d), "\n")
+
+	for _, v := range lines {
+		v = strings.TrimSpace(v)
+		// skip comments or empty v
+		if strings.HasPrefix(v, "#") ||
+			v == "" {
+			continue
+		}
+		// if v has whitespace, host should not
+		if strings.Contains(v, " ") {
+			parts := strings.Split(v, " ")
+			// we pick th first value
+			// the rest likely to be a comment
+			v = parts[0]
+		}
+		hosts[v] = true
+	}
+
+	return hosts
 
 }

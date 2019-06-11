@@ -41,8 +41,9 @@ func main() {
 		concurrent <- struct{}{}
 
 		go func() {
-			defer <-concurrent
+			defer func() {<-concurrent}()
 			// process URL here
+//			resp
 
 			
 
