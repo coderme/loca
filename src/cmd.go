@@ -21,6 +21,9 @@ const (
 	defaultDirAssets    = `assets`
 	defaultDirMedia     = `media`
 	defaultDirArchieve  = `archieves`
+	defaultDirDocs      = `docs`
+	defaultDirPages     = "pages"
+	defaultDirUnsorted  = "unsorted"
 	defaultLang         = "en"
 	defaultSkippedHosts = "youtube.com,vimeo.com,github.com,bitbucket.com"
 	defaultSkippedURLs  = ""
@@ -46,7 +49,10 @@ var (
 	dir          = flag.String("dir", defaultDir, "Dirctory root where to store all downloaded files.")
 	dirAssets    = flag.String("dir-assets", defaultDirAssets, "Dirctory where to store assets files.")
 	dirMedia     = flag.String("dir-media", defaultDirMedia, "Dirctory where to store videos and audios files.")
+	dirDocs      = flag.String("dir-Docs", defaultDirDocs, "Dirctory where to store doc, epub and pdf.")
+	dirPages     = flag.String("dir-pages", defaultDirPages, "Dirctory where to store HTML pages.")
 	dirArchieves = flag.String("dir-archieves", defaultDirArchieve, "Directory where to store archieve files")
+	dirUnsorted  = flag.String("dir-unsorted", defaultDirUnsorted, "Dirctory where to store Unsorted files.")
 
 	skippedHosts = flag.String("skipped-hosts", defaultSkippedHosts, "CSV, skip fetching any host that contains any of these values.")
 	skippedURLs  = flag.String("skipped-urls", defaultSkippedURLs, "CSV, skip fetching any url that contains any of these values.")
@@ -63,7 +69,7 @@ var (
 	showVersion = flag.Bool("v", false, "Print version")
 
 	// global vars
-	hosts = make(map[string]bool)
+	hosts []string
 )
 
 func init() {
@@ -126,7 +132,7 @@ func printVersion() {
 }
 
 // cacheHosts graps hosts from remote URL or local file
-func cacheHosts(u string) (map[string]bool, error) {
+func cacheHosts(u string) ([]string, error) {
 
 	// local file
 	if strings.HasPrefix(u, "/") {

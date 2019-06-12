@@ -44,9 +44,104 @@ func fetch(u string, delay time.Duration) (*http.Response, error) {
 	return client.Do(req)
 }
 
-func guessMime(u string) string {
+func getDir(u string) (string, error) {
+	dirCSS := path.Join(*dirAssets, "css")
+	dirJS := path.Join(*dirAssets, "js")
+	dirFonts := path.Join(*dirAssets, "fonts")
+	dirImages := path.Join(*dirAssets, "images")
+	dirSVG := path.Join(*dirAssets, "svg")
+	// compound paths
+	dirPNG := path.Join(dirImages, "png")
+	dirJPG := path.Join(dirImages, "jpg")
+	// media
+	dirVideos := path.Join(*dirMedia, "videos")
+	dirMP4 := path.Join(dirVideos, "mp4")
+	dirWMV := path.Join(dirVideos, "wmv")
+	dirMOV := path.Join(dirVideos, "mov")
+	dirAVI := path.Join(dirVideos, "avi")
+	dirWEBP := path.Join(dirVideos, "webp")
+	dirFLV := path.Join(dirVideos, "flv")
+	dirOGV := path.Join(dirVideos, "ogv")
+	dirOGX := path.Join(dirVideos, "ogx")
+	dirMKV := path.Join(dirVideos, "mkv")
 
-	return ""
+	// audio
+	dirAudio := path.Join(*dirMedia, "audios")
+	dirAAC := path.Join(dirAudio, "aac")
+	dirMP3 := path.Join(dirAudio, "mp3")
+	dirMP2 := path.Join(dirAudio, "mp2")
+	dirOGG := path.Join(dirVideos, "ogg")
+	dirOGA := path.Join(dirVideos, "oga")
+	dirM4A := path.Join(dirVideos, "m4a")
+	dirWMA := path.Join(dirVideos, "wma")
+
+	mimes := map[string]string{
+		// fonts
+		"fonts.googleapis.com/css": dirCSS,
+		// Material icons
+		"fonts.googleapis.com/icon": dirCSS,
+		".css":                      dirCSS,
+		".js":                       dirJS,
+		".woff2":                    dirFonts,
+		".woff":                     dirFonts,
+		".oet":                      dirFonts,
+
+		// images
+		".svg":  dirSVG,
+		".png":  dirPNG,
+		".jpg":  dirJPG,
+		".jpeg": dirJPG,
+		// media
+		// videos
+		".mp4":  dirMP4,
+		".wmv":  dirWMV,
+		".mov":  dirMOV,
+		".avi":  dirAVI,
+		".webp": dirWEBP,
+		".flv":  dirFLV,
+		".ogv":  dirOGV,
+		".ogx":  dirOGX,
+		".m4v":  dirMP4,
+
+		// audio
+		".mp2": dirMP2,
+		".mp3": dirMP3,
+		".m4a": dirM4A,
+		".aac": dirAAC,
+		".ogg": dirOGG,
+		".oga": dirOGA,
+		".wma": dirWMA,
+	}
+
+	lowered := strings.ToLower(u)
+
+	for i, v := range mimes {
+		if strings.Contains(lowered, i) {
+			return v, nil
+		}
+	}
+
+	return guessExt(lowered)
+
+}
+
+// guessExt ties hard to guess extention of a file
+func guessExt(u string) (string, error) {
+
+	if strings.Contains(u, ".") {
+
+		parsed, err := url.Parse(u)
+		if err != nil {
+			return "", err
+		}
+
+		return strings.Trim(
+			path.Ext(parsed.Path), ".",
+		), nil
+	}
+
+	return "html", nil
+
 }
 
 // prettyName makes a file form URL
@@ -238,13 +333,13 @@ func rewriteOfflineURLs(data string) string {
 					return m[1] + "#0" + m[3]
 				}
 
-				if !isOfflineHost(m[2]) {
+				if !isOfflineHost(parsed.Host) {
 					return match0
 				}
 
 				return m[1] +
 					parsed.Scheme + "://" +
-					"0.0.0.0" + parsed.Host +
+					"0.0.0.0/" + parsed.Host +
 					parsed.RequestURI() +
 					m[3]
 
@@ -257,8 +352,13 @@ func rewriteOfflineURLs(data string) string {
 
 // isOfflineHost lookup host against
 func isOfflineHost(host string) bool {
-	_, ok := hosts[host]
-	return ok
+	for _, h := range hosts {
+		if strings.Contains(host, h) {
+			return true
+		}
+
+	}
+	return false
 }
 
 // fetchToFile fetch URL and save it to local file
@@ -297,8 +397,8 @@ func fetchToFile(u string) error {
 }
 
 // parseHosts parses data for hosts
-func parseHosts(d []byte) map[string]bool {
-	hosts := make(map[string]bool)
+func parseHosts(d []byte) []string {
+	var hosts []string
 	lines := strings.Split(string(d), "\n")
 
 	for _, v := range lines {
@@ -315,7 +415,7 @@ func parseHosts(d []byte) map[string]bool {
 			// the rest likely to be a comment
 			v = parts[0]
 		}
-		hosts[v] = true
+		hosts = append(hosts, v)
 	}
 
 	return hosts
