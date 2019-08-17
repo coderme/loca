@@ -61,10 +61,10 @@ var (
 	onlyURLs  = flag.String("only-urls", defaultOnlyURLs, "CSV, Fetch only URLs that contain any of these values.")
 
 	userAgent       = flag.String("user-agent", defaultUserAgent, "UserAgent of the client")
-	keepMeta        = flag.Bool("keep-meta", false, "Keep origin <meta> tags")
-	offlineDisabled = flag.Bool("offline-disabled", false, "Disable reqriting hosts for offline browsing")
+	keepMeta        = flag.Bool("keep-meta", false, "Keep original <meta> tags")
+	offlineDisabled = flag.Bool("offline-disabled", false, "Disable rewriting hosts for offline browsing")
 
-	offlineHosts = flag.String("offline-list", defaultOfflineList, "List of websites to be rewritin for offline browsing")
+	offlineHosts = flag.String("offline-list", defaultOfflineList, "List of websites to be rewriting for offline browsing")
 
 	showVersion = flag.Bool("v", false, "Print version")
 
@@ -94,6 +94,15 @@ func parseOptions() error {
 	args := flag.Args()
 	if len(args) == 0 {
 		return fmt.Errorf("Missing URL(s) to work on")
+	}
+
+	if !*offlineDisabled {
+		var err error
+		hosts, err = cacheHosts(*offlineHosts)
+		if err != nil {
+			return fmt.Errorf("cacheHosts()-> %v", err)
+		}
+
 	}
 
 	return nil

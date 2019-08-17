@@ -91,7 +91,7 @@ func getDir(u string) (string, error) {
 		".png":  dirPNG,
 		".jpg":  dirJPG,
 		".jpeg": dirJPG,
-		// media
+
 		// videos
 		".mp4":  dirMP4,
 		".wmv":  dirWMV,
@@ -144,7 +144,7 @@ func guessExt(u string) (string, error) {
 
 }
 
-// prettyName makes a file form URL
+// prettyName makes a file name from URL
 func prettyName(u string) string {
 	// get rid of the scheme://
 	url := strings.SplitN(u, "://", 2)[1]
@@ -160,18 +160,25 @@ func prettyName(u string) string {
 	var cleaned []string
 
 	// get dir based on guessed mimetime
+	// err is ignored since it has been dealt with it
+	// already
+	dir, _ := getDir(u)
+
+	cleaned = append(cleaned,
+		cleanedPath(dir),
+	)
 
 	// add *cleaned parts to the clean
 	cleaned = append(cleaned, parts...)
 
-	// return ""
+	return strings.Join(cleaned, "/")
 
 }
 
 // pathParts gets directory and basename from fileName
-func dirName(fileName string) (dir string) {
+func dirName(f string) (dir string) {
 
-	parts := strings.Split(fileName, "/")
+	parts := strings.Split(f, "/")
 
 	return strings.Join(parts[:len(parts)-1], "/")
 
@@ -383,8 +390,12 @@ func fetchToFile(u string) error {
 	// if it allowed to be stored
 
 	// cool, it seems we plan to save it
-	// lets name it
-	name := prettyName(u)
+	// lets give it a cool name
+	name, err := prettyName(u)
+
+	if err != nil {
+
+	}
 
 	err = saveFile(resp, name)
 	if err != nil {
@@ -419,5 +430,27 @@ func parseHosts(d []byte) []string {
 	}
 
 	return hosts
+
+}
+
+// cleanedPath cleans path parts from non-safe
+// letters, like space, semicolons
+func cleanedPath(p string) string {
+
+	parts := strings.Split(p, "/")
+	var cleaned []string
+
+	for i, v := range parts {
+
+		v = prettyURL(v)
+
+		if v == "" {
+			continue
+		}
+
+		cleaned = append(cleaned, v)
+	}
+
+	return strings.Join(cleaned, "/")
 
 }
