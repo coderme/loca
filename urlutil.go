@@ -21,9 +21,11 @@ var (
 // buildRequest builds a HTTP request and sets a custom User Agent
 func buildRequest(u, ua string) (*http.Request, error) {
 	req, err := http.NewRequest("GET", u, nil)
+
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Set("User-Agent", ua)
 
 	return req, err
@@ -76,6 +78,7 @@ func getDir(u string) (string, error) {
 	dirWMA := path.Join(dirVideos, "wma")
 
 	mimes := map[string]string{
+		// Special cases
 		// fonts
 		"fonts.googleapis.com/css": dirCSS,
 		// Material icons
@@ -94,6 +97,7 @@ func getDir(u string) (string, error) {
 
 		// videos
 		".mp4":  dirMP4,
+		".mkv":  dirMKV,
 		".wmv":  dirWMV,
 		".mov":  dirMOV,
 		".avi":  dirAVI,
@@ -326,8 +330,8 @@ func resolvePath(page, resource string) string {
 
 }
 
-// rewriteHosts rewrites all href and frc URL to 0.0.0.0
-// to prevent never-ending loading status of webpages
+// rewriteHosts rewrites all href and src URL to 0.0.0.0
+// to prevent wasteful overloading of webpages' resources
 // while browsing offline
 func rewriteOfflineURLs(data string) string {
 	for _, re := range reFilter {
@@ -368,8 +372,142 @@ func isOfflineHost(host string) bool {
 	return false
 }
 
+// mayFetchURL checks whether URL is allowed to be fetched or not
+func mayFetchURL(u string) (bool, error) {
+
+	parsed, err := url.Parse(u)
+
+	if err != nil {
+		return false, err
+	}
+
+	if skippableURL(u) {
+		return false, nil
+	}
+
+	if skippableHost(parsed.Host) {
+		return false, nil
+	}
+
+	if !allowedURL(u) {
+		return false, nil
+	}
+
+	if !allowedHost(parsed.Host) {
+		return false, nil
+	}
+
+	// assume yes
+	return true, nil
+}
+
+// skippableHost checks if Host may be skipped
+func skippableHost(host string) bool {
+
+	hostsSkipped := strings.Split(*skippedHosts, ",")
+
+	for _, h := range hostsSkipped {
+		h = strings.TrimSpace(h)
+
+		if h == "" {
+			continue
+		}
+
+		if host == h {
+			return true
+		}
+	}
+
+	return false
+}
+
+// skippableURL checks if URL may be skipped
+func skippableURL(url string) bool {
+
+	URLsSkipped := strings.Split(*skippedURLs, ",")
+
+	for _, v := range URLsSkipped {
+		v = strings.TrimSpace(v)
+
+		if v == "" {
+			continue
+		}
+
+		if strings.Contains(url, v) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func allowedHost(host string) bool {
+
+	hostsOnly := strings.Split(*onlyHosts, ",")
+
+	var cleanedHostsOnly []string
+
+	for _, h := range hostsOnly {
+		h = strings.TrimSpace(h)
+
+		if h != "" {
+			cleanedHostsOnly = append(cleanedHostsOnly, h)
+		}
+	}
+
+	if len(cleanedHostsOnly) > 0 {
+
+		matchHost := false
+
+		for _, h := range cleanedHostsOnly {
+			if host == h {
+				matchHost = true
+				break
+			}
+		}
+
+		if !matchHost {
+			return false
+		}
+	}
+
+	return true
+}
+
+func allowedURL(url string) bool {
+
+	URLsOnly := strings.Split(*onlyURLs, ",")
+
+	var cleanedURLsOnly []string
+
+	for _, v := range URLsOnly {
+		v = strings.TrimSpace(v)
+
+		if v != "" {
+			cleanedURLsOnly = append(cleanedURLsOnly, v)
+		}
+	}
+
+	if len(cleanedURLsOnly) > 0 {
+
+		matchURL := false
+
+		for _, v := range cleanedURLsOnly {
+			if strings.Contains(url, v) {
+				matchURL = true
+				break
+			}
+		}
+
+		if !matchURL {
+			return false
+		}
+	}
+
+	return true
+}
+
 // fetchToFile fetch URL and save it to local file
-// system
 func fetchToFile(u string) error {
 
 	parsed, err := parseURL(u)
@@ -386,23 +524,19 @@ func fetchToFile(u string) error {
 		return err
 	}
 
-	// check URL fetched content
+	// check URL fetched *content*
 	// if it allowed to be stored
 
 	// cool, it seems we plan to save it
 	// lets give it a cool name
-	name, err := prettyName(u)
-
-	if err != nil {
-
-	}
+	name := prettyName(u)
 
 	err = saveFile(resp, name)
 	if err != nil {
 		return err
 	}
 
-	pretty := prettyURL(u)
+	// pretty := prettyURL(u)
 
 	return nil
 }
@@ -440,7 +574,7 @@ func cleanedPath(p string) string {
 	parts := strings.Split(p, "/")
 	var cleaned []string
 
-	for i, v := range parts {
+	for _, v := range parts {
 
 		v = prettyURL(v)
 

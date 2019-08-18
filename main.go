@@ -17,22 +17,21 @@ func main() {
 		exit(1, err)
 	}
 
-	// init queue
-	queue := filo.NewStringStack()
+	stack := filo.NewStringStack()
 
 	for _, page := range pages {
-		queue.Push(page)
+		stack.Push(page)
 	}
 
 	concurrent := make(chan struct{}, *concurrency)
 
 	for {
 
-		if queue.Len() == 0 {
+		if stack.Len() == 0 {
 			break
 		}
 
-		url := queue.Pop()
+		url := stack.Pop()
 
 		if url == "" {
 			continue
@@ -41,11 +40,9 @@ func main() {
 		concurrent <- struct{}{}
 
 		go func() {
-			defer func() {<-concurrent}()
+			defer func() { <-concurrent }()
 			// process URL here
-//			resp
-
-			
+			//			resp
 
 		}()
 	}

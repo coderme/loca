@@ -92,6 +92,7 @@ func parseOptions() error {
 	}
 
 	args := flag.Args()
+
 	if len(args) == 0 {
 		return fmt.Errorf("Missing URL(s) to work on")
 	}
@@ -99,6 +100,7 @@ func parseOptions() error {
 	if !*offlineDisabled {
 		var err error
 		hosts, err = cacheHosts(*offlineHosts)
+
 		if err != nil {
 			return fmt.Errorf("cacheHosts()-> %v", err)
 		}
