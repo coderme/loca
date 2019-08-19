@@ -381,6 +381,11 @@ func mayFetchURL(u string) (bool, error) {
 		return false, err
 	}
 
+	if !*downloadURLsWithQueryString &&
+		strings.Contains(u, "?") {
+		return false, nil
+	}
+
 	if skippableURL(u) {
 		return false, nil
 	}
@@ -397,7 +402,7 @@ func mayFetchURL(u string) (bool, error) {
 		return false, nil
 	}
 
-	// assume yes
+	// say yes
 	return true, nil
 }
 
