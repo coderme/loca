@@ -406,6 +406,40 @@ func mayFetchURL(u string) (bool, error) {
 	return true, nil
 }
 
+// mayFetchContent checks whether Content is allowed to be fetched or not
+func mayFetchContent(u string) (bool, error) {
+
+	parsed, err := url.Parse(u)
+
+	if err != nil {
+		return false, err
+	}
+
+	if !*downloadURLsWithQueryString &&
+		strings.Contains(u, "?") {
+		return false, nil
+	}
+
+	if skippableURL(u) {
+		return false, nil
+	}
+
+	if skippableHost(parsed.Host) {
+		return false, nil
+	}
+
+	if !allowedURL(u) {
+		return false, nil
+	}
+
+	if !allowedHost(parsed.Host) {
+		return false, nil
+	}
+
+	// say yes
+	return true, nil
+}
+
 // skippableHost checks if Host may be skipped
 func skippableHost(host string) bool {
 
@@ -523,11 +557,26 @@ func fetchToFile(u string) error {
 
 	// check URL structure
 	// if it allowed to be fetched
+	willFetch, err := mayFetchURL(u)
+	if err != nil {
+		return fmt.Errorf("Err: isAllowedURL(%s) -> err -> %v",
+			u,
+			err,
+		)
+	}
+
+	if !willFetch {
+		return fmt.Errorf("Err: isAllowedURL(%s) -> NotAllowed",
+			u,
+		)
+	}
 
 	resp, err := fetch(parsed, *delay)
 	if err != nil {
 		return err
 	}
+
+	defer resp.Body.Close()
 
 	// check URL fetched *content*
 	// if it allowed to be stored
