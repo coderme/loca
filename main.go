@@ -42,9 +42,15 @@ func main() {
 		go func() {
 			defer func() { <-concurrent }()
 			// process URL here
-			//			resp
+			// dl uri
+			//	if it text/css, text/html (text|application)/javascript; then (discover) URLs -> resolveURLs -> queue them for prefetching -> rewrite external linked-resources to new local urls
+			// else if its text/* discover links
+			//else if its binary check if content allowed to be downloaded
+			// otherwise skip
 
 		}()
 	}
+
+	// rewrite paths
 
 }

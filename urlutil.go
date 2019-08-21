@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"os"
 	"path"
@@ -580,8 +581,9 @@ func fetchToFile(u string) error {
 
 	// check URL fetched *content*
 	// if it allowed to be stored
+	// if
 
-	// cool, it seems we plan to save it
+	// cool, seems we gonna save it
 	// lets give it a cool name
 	name := prettyName(u)
 
@@ -641,4 +643,11 @@ func cleanedPath(p string) string {
 
 	return strings.Join(cleaned, "/")
 
+}
+
+// isArchieve checks if response is archieve or not
+// return read bytes, bool
+func isArchieve(reader io.Reader) ([]byte, bool) {
+
+	return nil, false
 }
