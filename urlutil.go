@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"path"
@@ -646,8 +645,127 @@ func cleanedPath(p string) string {
 }
 
 // isArchieve checks if response is archieve or not
-// return read bytes, bool
-func isArchieve(reader io.Reader) ([]byte, bool) {
+func isArchieve(headers http.Header) bool {
+	archieves := []string{
+		"application/java-archive",
+		"application/x-7z-compressed",
+		"application/x-rar-compressed",
+		"application/vnd.debian.binary-package",
+		"application/x-redhat-package-manager",
+		"application/zip",
+		"application/x-gzip",
+		"application/x-gtar",
+		"application/x-shar",
+		"application/x-stuffit",
+		"application/x-tar",
+		"application/x-ustar",
+		"application/gzip",
+		"application/x-cpio",
+		"application/x-bcpio",
+		"application/x-perfmon",
+		"application/x-compress",
+		"application/x-compressed",
+	}
 
-	return nil, false
+	contentType := strings.ToLower(
+		headers.Get("Content-Type"),
+	)
+
+	for _, k := range archieves {
+		if strings.Contains(contentType, k) {
+			return true
+		}
+	}
+
+	return false
+
+}
+
+// isMedia checks if response is media or not
+func isMedia(headers http.Header) bool {
+	media := []string{
+		"audio/DAT12", "audio/dls", "audio/dsr-es201108", "audio/dsr-es202050",
+		"audio/dsr-es202211", "audio/dsr-es202212", "audio/DV", "audio/DVI4",
+		"audio/eac3", "audio/encaprtp", "audio/EVRC", "audio/EVRC-QCP",
+		"audio/EVRC0", "audio/EVRC1", "audio/EVRCB", "audio/EVRCB0",
+		"audio/EVRCB1", "audio/EVRCNW", "audio/EVRCNW0", "audio/EVRCNW1",
+		"audio/EVRCWB", "audio/EVRCWB0", "audio/EVRCWB1", "audio/EVS",
+		"audio/example", "audio/flexfec", "audio/fwdred", "audio/G711-0",
+		"audio/G719", "audio/G7221", "audio/G722", "audio/G723",
+		"audio/G726-16", "audio/G726-24", "audio/G726-32", "audio/G726-40",
+		"audio/G728", "audio/G729", "audio/G729D", "audio/G729E", "audio/GSM",
+		"audio/GSM-EFR", "audio/GSM-HR-08", "audio/iLBC", "audio/ip-mr_v2.5",
+		"audio/L8", "audio/L16", "audio/L20", "audio/L24", "audio/LPC",
+		"audio/MELP", "audio/MELP600", "audio/MELP1200", "audio/MELP2400",
+		"audio/mobile-xmf", "audio/MPA", "audio/mp4", "audio/MP4A-LATM",
+		"audio/mpa-robust", "audio/mpeg", "audio/mpeg4-generic", "audio/ogg",
+		"audio/opus", "audio/PCMA", "audio/PCMA-WB", "audio/PCMU",
+		"audio/PCMU-WB", "audio/prs.sid", "audio/raptorfec", "audio/RED",
+		"audio/rtp-enc-aescm128", "audio/rtploopback", "audio/rtp-midi",
+		"audio/rtx", "audio/SMV", "audio/SMV0", "audio/SMV-QCP",
+		"audio/sp-midi", "audio/speex", "audio/t140c", "audio/t38",
+		"audio/telephone-event", "audio/TETRA_ACELP", "audio/tone",
+		"audio/UEMCLIP", "audio/ulpfec", "audio/usac", "audio/VDVI",
+		"audio/VMR-WB", "audio/vnd.3gpp.iufp", "audio/vnd.4SB",
+		"audio/vnd.audiokoz", "audio/vnd.CELP", "audio/vnd.cisco.nse",
+		"audio/vnd.cmles.radio-events", "audio/vnd.cns.anp1",
+		"audio/vnd.cns.inf1", "audio/vnd.dece.audio",
+		"audio/vnd.digital-winds", "audio/vnd.dlna.adts",
+		"audio/vnd.dolby.heaac.1", "audio/vnd.dolby.heaac.2",
+		"audio/vnd.dolby.mlp", "audio/vnd.dolby.mps", "audio/vnd.dolby.pl2",
+		"audio/vnd.dolby.pl2x", "audio/vnd.dolby.pl2z",
+		"audio/vnd.dolby.pulse.1", "audio/vnd.dra", "audio/vnd.dts",
+		"audio/vnd.dts.hd", "audio/vnd.dts.uhd", "audio/vnd.dvb.file",
+		"audio/vnd.everad.plj", "audio/vnd.hns.audio",
+		"audio/vnd.lucent.voice", "audio/vnd.ms-playready.media.pya",
+		"audio/vnd.nokia.mobile-xmf", "audio/vnd.nortel.vbk",
+		"audio/vnd.nuera.ecelp4800", "audio/vnd.nuera.ecelp7470",
+		"audio/vnd.nuera.ecelp9600", "audio/vnd.octel.sbc",
+		"audio/vnd.presonus.multitrack", "audio/vnd.qcelp",
+		"audio/vnd.rhetorex.32kadpcm", "audio/vnd.rip",
+		"audio/vnd.sealedmedia.softseal.mpeg", "audio/vnd.vmx.cvsd",
+		"audio/vorbis", "audio/vorbis-config",
+
+		// video
+		"video/iso.segment", "video/JPEG", "video/jpeg2000",
+		"video/mj2", "video/MP1S", "video/MP2P", "video/MP2T",
+		"video/mp4", "video/MP4V-ES", "video/MPV",
+		"video/mpeg4-generic", "video/nv", "video/ogg",
+		"video/pointer", "video/quicktime", "video/raptorfec",
+		"video/rtp-enc-aescm128", "video/rtploopback", "video/rtx",
+		"video/smpte291", "video/SMPTE292M", "video/ulpfec",
+		"video/vc1", "video/vc2", "video/vnd.CCTV",
+		"video/vnd.dece.hd", "video/vnd.dece.mobile",
+		"video/vnd.dece.mp4", "video/vnd.dece.pd", "video/vnd.dece.sd",
+		"video/vnd.dece.video", "video/vnd.directv.mpeg",
+		"video/vnd.directv.mpeg-tts", "video/vnd.dlna.mpeg-tts",
+		"video/vnd.dvb.file", "video/vnd.fvt", "video/vnd.hns.video",
+		"video/vnd.iptvforum.1dparityfec-1010",
+		"video/vnd.iptvforum.1dparityfec-2005",
+		"video/vnd.iptvforum.2dparityfec-1010",
+		"video/vnd.iptvforum.2dparityfec-2005",
+		"video/vnd.iptvforum.ttsavc", "video/vnd.iptvforum.ttsmpeg2",
+		"video/vnd.motorola.video", "video/vnd.motorola.videop",
+		"video/vnd.mpegurl", "video/vnd.ms-playready.media.pyv",
+		"video/vnd.nokia.interleaved-multimedia",
+		"video/vnd.nokia.mp4vr", "video/vnd.nokia.videovoip",
+		"video/vnd.objectvideo", "video/vnd.radgamettools.bink",
+		"video/vnd.radgamettools.smacker", "video/vnd.sealed.mpeg1",
+		"video/vnd.sealed.mpeg4", "video/vnd.sealed.swf",
+		"video/vnd.sealedmedia.softseal.mov", "video/vnd.uvvu.mp4",
+		"video/vnd.youtube.yt", "video/vnd.vivo", "video/VP8",
+	}
+
+	contentType := strings.ToLower(
+		headers.Get("Content-Type"),
+	)
+
+	for _, k := range media {
+		if strings.Contains(contentType, strings.ToLower(k)) {
+			return true
+		}
+	}
+
+	return false
+
 }
