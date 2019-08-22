@@ -578,9 +578,11 @@ func fetchToFile(u string) error {
 
 	defer resp.Body.Close()
 
-	// check URL fetched *content*
-	// if it allowed to be stored
-	// if
+	// undesired archive or media
+	if !*downloadArchive && isArchive(resp.Request.Header) ||
+		!*downloadMedia && isMedia(resp.Request.Header) {
+		return nil
+	}
 
 	// cool, seems we gonna save it
 	// lets give it a cool name
@@ -644,9 +646,9 @@ func cleanedPath(p string) string {
 
 }
 
-// isArchieve checks if response is archieve or not
-func isArchieve(headers http.Header) bool {
-	archieves := []string{
+// isArchive checks if response is archive or not
+func isArchive(headers http.Header) bool {
+	archives := []string{
 		"application/java-archive",
 		"application/x-7z-compressed",
 		"application/x-rar-compressed",
@@ -671,7 +673,7 @@ func isArchieve(headers http.Header) bool {
 		headers.Get("Content-Type"),
 	)
 
-	for _, k := range archieves {
+	for _, k := range archives {
 		if strings.Contains(contentType, k) {
 			return true
 		}
