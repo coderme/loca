@@ -15,6 +15,7 @@ import (
 )
 
 var (
+	// reusable client
 	client = &http.Client{}
 )
 
