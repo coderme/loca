@@ -362,7 +362,7 @@ func rewriteOfflineURLs(data string) string {
 
 }
 
-// isOfflineHost lookup host against
+// isOfflineHost lookup host against offline hosts
 func isOfflineHost(host string) bool {
 	for _, h := range hosts {
 		if strings.Contains(host, h) {
