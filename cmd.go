@@ -41,7 +41,7 @@ var (
 	downloadMedia               = flag.Bool("dl-media", false, "Download videos and audio files")
 	downloadArchive             = flag.Bool("dl-archive", false, "Download archive files")
 	downloadURLsWithQueryString = flag.Bool("dl-query", false, "Download URLs those with query string like https://example.com/?action=msglist&order=desc")
-	ascend                      = flag.Bool("ascend", false, "Ascend to host root when fetching")
+	ascend                      = flag.Bool("ascend", false, "Ascend to parent directoy when fetching")
 	retry                       = flag.Bool("retry", false, "Retry fetching directly if fetch failed")
 	retryCount                  = flag.Int("retry-max-count", retryDefaultCount, "Retry fetching this times before giving up")
 	verbose                     = flag.Bool("verbose", false, "Be more verbose")
