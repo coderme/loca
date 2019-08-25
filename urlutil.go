@@ -245,6 +245,39 @@ func parseURL(u string) (string, error) {
 
 }
 
+// filterDiscovered filters discovered URL according of
+func filterDiscovered(uri, content string) (filtered []string) {
+	urls := discoverHREFURLs(content)
+	srcs := discoverSrcURLs(content)
+
+	var all []string
+	if urls != nil {
+		all = append(all, urls...)
+	}
+
+	if srcs != nil {
+		all = append(all, srcs...)
+	}
+
+	for _, u := range all {
+		// resolve
+
+		// allowed URL?
+
+		// parent and ascend
+
+		// already downloaded
+
+		u = strings.TrimSpace(u)
+
+		if u != "" {
+			filtered = append(filtered, u)
+		}
+	}
+
+	return
+}
+
 // discoverSrcURLs discovers SRC urls for fetching
 func discoverSrcURLs(s string) (discovered []string) {
 	matches := reSRC.FindAllStringSubmatch(s, -1)
