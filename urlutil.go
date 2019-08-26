@@ -271,9 +271,8 @@ func filterDiscovered(uri, content string) (filtered []string) {
 
 		u = strings.TrimSpace(u)
 
-		if u != "" {
-			filtered = append(filtered, u)
-		}
+		filtered = append(filtered, u)
+
 	}
 
 	return
