@@ -261,7 +261,7 @@ func filterDiscovered(uri, content string) (filtered []string) {
 
 	for _, u := range all {
 		// resolve
-		u = resolveURL(uri, u, true)
+		u, _ = resolveURL(uri, u, true)
 
 		// allowed URL?
 
