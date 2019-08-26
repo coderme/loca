@@ -261,9 +261,18 @@ func filterDiscovered(uri, content string) (filtered []string) {
 
 	for _, u := range all {
 		// resolve
-		u, _ = resolveURL(uri, u, true)
+		var err error
+		u, err = resolveURL(uri, u, true)
+
+		if err != nil {
+			continue
+		}
 
 		// allowed URL?
+		allowed, err := mayFetchURL(u)
+		if err != nil || !allowed {
+			continue
+		}
 
 		// parent and ascend
 
