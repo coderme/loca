@@ -11,6 +11,12 @@ type URLFormat struct {
 	Unescape bool
 }
 
+type URLRelation struct {
+	Parent,
+	Child string
+	Result bool
+}
+
 func TestParseURL(t *testing.T) {
 	URLs := map[string]bool{
 		"example.com/home.html":                   true,
