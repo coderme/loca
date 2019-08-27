@@ -161,3 +161,7 @@ func TestResolvePath(t *testing.T) {
 	}
 
 }
+
+func TestIsParent(t *testing.T) {
+
+}
