@@ -449,6 +449,25 @@ func mayFetchURL(u string) (bool, error) {
 	return true, nil
 }
 
+// isParent checks whether "other" is parent to "uri"
+// in a directory-like structure
+// https://example.org/pages *is* parent to
+// https://example.org/pages/about
+func isParent(uri, other string) bool {
+	uri = strings.Trim(uri, "/ ")
+	other = strings.Trim(other, " /")
+
+	slashesInURI := strings.Count(uri, "/")
+	slashesInOther := strings.Count(other, "/")
+
+	if slashesInOther > slashesInURI &&
+		strings.HasPrefix(uri, other) {
+		return true
+	}
+
+	return false
+}
+
 // mayFetchContent checks whether Content is allowed to be fetched or not
 func mayFetchContent(u string) (bool, error) {
 
