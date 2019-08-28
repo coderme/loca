@@ -461,7 +461,7 @@ func isParent(uri, other string) bool {
 	slashesInOther := strings.Count(other, "/")
 
 	if slashesInOther > slashesInURI &&
-		strings.HasPrefix(uri, other) {
+		strings.HasPrefix(other, uri) {
 		return true
 	}
 

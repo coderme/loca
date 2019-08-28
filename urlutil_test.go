@@ -170,4 +170,17 @@ func TestResolvePath(t *testing.T) {
 
 func TestIsParent(t *testing.T) {
 
+	urls := []URLRelation{
+
+		URLRelation{
+			Parent: "https://example.org/about",
+			Child:  "https://example.org/about/site",
+			Result: true,
+		},
+	}
+
+	for _, u := range urls {
+
+	}
+
 }
