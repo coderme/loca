@@ -177,6 +177,24 @@ func TestIsParent(t *testing.T) {
 			Child:  "https://example.org/about/site",
 			Result: true,
 		},
+
+		URLRelation{
+			Parent: "https://example.org/home",
+			Child:  "https://example.org/about/",
+			Result: false,
+		},
+
+		URLRelation{
+			Parent: "https://example.org/home/",
+			Child:  "https://example.org/about/",
+			Result: false,
+		},
+
+		URLRelation{
+			Parent: "https://example.org/home.html",
+			Child:  "https://example.org/about/",
+			Result: false,
+		},
 	}
 
 	for _, u := range urls {
