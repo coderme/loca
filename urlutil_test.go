@@ -181,6 +181,14 @@ func TestIsParent(t *testing.T) {
 
 	for _, u := range urls {
 
+		result := isParent(u.Parent, u.Child)
+
+		if u.Result != result {
+
+			t.Error("Expected:", u.Result, "But Got:", result)
+
+		}
+
 	}
 
 }
