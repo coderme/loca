@@ -320,7 +320,16 @@ func discoverHREFURLs(s string) (discovered []string) {
 	return
 }
 
+// isAscending checks if the "uri" is a parent of
+// any of the "startPages"
 func isAscending(uri string, startPages []string) bool {
+
+	for _, p := range startPages {
+
+		if isParent(uri, p) {
+			return true
+		}
+	}
 
 	return false
 
