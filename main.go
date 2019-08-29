@@ -4,6 +4,10 @@ import (
 	"github.com/codermeorg/filo"
 )
 
+var (
+	pages []string
+)
+
 func main() {
 	// parse flag
 	parseOptions()
@@ -12,7 +16,8 @@ func main() {
 		printVersion()
 	}
 
-	pages, err := getStartPages()
+	var err error
+	pages, err = getStartPages()
 	if err != nil {
 		exit(1, err)
 	}
