@@ -275,6 +275,9 @@ func filterDiscovered(uri, content string) (filtered []string) {
 		}
 
 		// parent and ascend
+		if isAscending(u, pages) && *ascend {
+			continue
+		}
 
 		// already downloaded
 
@@ -315,6 +318,12 @@ func discoverHREFURLs(s string) (discovered []string) {
 	}
 
 	return
+}
+
+func isAscending(uri string, startPages []string) bool {
+
+	return false
+
 }
 
 // resolveURL resolve URL based on its parent URL
