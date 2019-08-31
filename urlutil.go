@@ -275,7 +275,7 @@ func filterDiscovered(uri, content string) (filtered []string) {
 		}
 
 		// parent and ascend
-		if isAscending(u, pages) && *ascend {
+		if isAscending(u, pages) && !*ascend {
 			continue
 		}
 
