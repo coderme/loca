@@ -280,7 +280,10 @@ func filterDiscovered(uri, content string) (filtered []string) {
 		}
 
 		// already downloaded
-		//localFile := prettyName(u)
+		localFile := prettyName(u)
+		if _, err := os.Stat(localFile); err != nil {
+
+		}
 
 		u = strings.TrimSpace(u)
 
