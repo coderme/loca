@@ -130,6 +130,11 @@ func getDir(u string) (string, error) {
 
 }
 
+func getSources(url, s string) ([]string, error) {
+
+	return nil, nil
+}
+
 // guessExt ties hard to guess extention of a file
 func guessExt(u string) (string, error) {
 
