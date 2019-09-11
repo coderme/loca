@@ -6,6 +6,7 @@ import (
 
 var (
 	reHREF      = regexp.MustCompile(`(?i) href=["']([^<>"']+)['"]`)
+	reStyle     = regexp.MustCompile(`(?i)<link rel="stylesheet" href=['"]([^<>"']+)['"]`)
 	reSRC       = regexp.MustCompile(`(?i) src=["']([^<>"']+)['"]`)
 	reUglyURL   = regexp.MustCompile(`(?s)[;\+\s"'` + "`" + `%\?!~><\}\{\]\[\\\\:,|\*&^$@\+\(\)]+`)
 	reOneHyphen = regexp.MustCompile(`-{2,}`)
