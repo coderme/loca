@@ -5,9 +5,11 @@ import (
 )
 
 var (
-	reHREF      = regexp.MustCompile(`(?i) href=["']([^<>"']+)['"]`)
-	reStyle     = regexp.MustCompile(`(?i)<link rel="stylesheet" href=['"]([^<>"']+)['"]`)
-	reSRC       = regexp.MustCompile(`(?i) src=["']([^<>"']+)['"]`)
+	reHREF     = regexp.MustCompile(`(?i) href=["']([^<>"']+)['"]`)
+	reStyle    = regexp.MustCompile(`(?i)<link\s+rel=['"]stylesheet['"]\s+href=['"]([^<>"']+)['"]`)
+	reStyleAlt = regexp.MustCompile(`(?i)<link\s+href=['"]([^<>"']+)['"]\s+rel=['"]stylesheet['"]`)
+	reSRC      = regexp.MustCompile(`(?i) src=["']([^<>"']+)['"]`)
+
 	reUglyURL   = regexp.MustCompile(`(?s)[;\+\s"'` + "`" + `%\?!~><\}\{\]\[\\\\:,|\*&^$@\+\(\)]+`)
 	reOneHyphen = regexp.MustCompile(`-{2,}`)
 	// integrety and crossorigin maybe problematic on localhost
