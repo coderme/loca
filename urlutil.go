@@ -299,6 +299,32 @@ func filterDiscovered(uri, content string) (filtered []string) {
 	return
 }
 
+// discoverAssetsURLs discovers SRC urls for fetching
+func discoverAssetsURLs(s string) (discovered []string) {
+	matches := reSRC.FindAllStringSubmatch(s, -1)
+	for _, m := range matches {
+
+		url := strings.TrimSpace(m[1])
+
+		if url != "" {
+			discovered = append(discovered, m[1])
+		}
+	}
+
+	styles := reStyle.FindAllStringSubmatch(s, -1)
+
+	for _, m := range styles {
+		url := strings.TrimSpace(m[1])
+
+		if url != "" {
+			discovered = append(discovered, url)
+		}
+
+	}
+
+	return
+}
+
 // discoverSrcURLs discovers SRC urls for fetching
 func discoverSrcURLs(s string) (discovered []string) {
 	matches := reSRC.FindAllStringSubmatch(s, -1)
