@@ -252,19 +252,22 @@ func parseURL(u string) (string, error) {
 
 // filterDiscovered filters discovered URL according of
 func filterDiscovered(uri, content string) (filtered []string) {
-	urls := discoverHREFURLs(content)
-	srcs := discoverSrcURLs(content)
+	links := discoverHREFURLs(content)
 
-	var all []string
-	if urls != nil {
-		all = append(all, urls...)
+	assets := discoverAssetsURLs(content)
+
+	for _, u := range assets {
+		// resolve
+		var err error
+		u, err = resolveURL(uri, u, true)
+
+		if err != nil {
+			continue
+		}
+
 	}
 
-	if srcs != nil {
-		all = append(all, srcs...)
-	}
-
-	for _, u := range all {
+	for _, u := range links {
 		// resolve
 		var err error
 		u, err = resolveURL(uri, u, true)
