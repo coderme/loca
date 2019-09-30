@@ -265,6 +265,12 @@ func filterDiscovered(uri, content string) (filtered []string) {
 			continue
 		}
 
+		u = strings.TrimSpace(u)
+
+		if u == "" {
+			continue
+		}
+
 	}
 
 	for _, u := range links {
