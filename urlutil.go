@@ -271,6 +271,8 @@ func filterDiscovered(uri, content string) (filtered []string) {
 			continue
 		}
 
+		filtered = append(filtered, u)
+
 	}
 
 	for _, u := range links {
